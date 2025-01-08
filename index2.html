@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Visualizer</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: black;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        h1 {
+            margin: 20px 0;
+        }
+
+        canvas {
+            display: block;
+            border: 2px solid #00ffa2;
+            border-radius: 10px;
+            box-shadow: 0 0 10px #00ffa2;
+        }
+
+        .controls {
+            margin: 20px 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .controls button,
+        .controls label {
+            background-color: #00ffa2;
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .controls input {
+            display: none;
+        }
+
+        .controls button:hover,
+        .controls label:hover {
+            background-color: #009f73;
+        }
+
+        .status {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #00ffa2;
+        }
+
+        .github-link {
+            margin-top: 20px;
+            text-decoration: none;
+            color: #00ffa2;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .github-link:hover {
+            color: #009f73;
+        }
+
+        .hide-toggle {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 255, 162, 0.8);
+            border: none;
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            color: black;
+            box-shadow: 0 0 10px #00ffa2;
+        }
+
+        .hide-toggle:hover {
+            background: rgba(0, 159, 115, 0.8);
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>AUDIO VISUALIZER</h1>
+    <canvas id="visualizer"></canvas>
+    <div class="controls">
+        <label for="audioFile">Choose Audio File</label>
+        <input type="file" id="audioFile" accept="audio/*">
+        <button id="micButton">Use Microphone</button>
+        <button id="pauseButton" disabled>Pause</button>
+        <button id="resetButton">Reset</button>
+    </div>
+    <div class="status" id="status">Select an audio file or use microphone to begin</div>
+    <a href="https://github.com/yourusername/audio-visualizer" class="github-link" target="_blank">View on GitHub</a>
+    <button class="hide-toggle" id="hideToggle">☰</button>
+
+    <script>
+        class AudioVisualizer {
+            constructor() {
+                this.canvas = document.getElementById('visualizer');
+                this.ctx = this.canvas.getContext('2d');
+                this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                this.source = null;
+                this.analyzer = this.audioContext.createAnalyser();
+                this.paused = false;
+
+                this.analyzer.fftSize = 2048;
+                this.bufferLength = this.analyzer.frequencyBinCount;
+                this.dataArray = new Uint8Array(this.bufferLength);
+
+                this.resize();
+                window.addEventListener('resize', () => this.resize());
+
+                this.animate();
+
+                this.setupEventListeners();
+            }
+
+            resize() {
+                this.canvas.width = Math.min(window.innerWidth * 0.9, 1200);
+                this.canvas.height = Math.min(window.innerHeight * 0.6, 600);
+            }
+
+            setupEventListeners() {
+                const audioInput = document.getElementById('audioFile');
+                const micButton = document.getElementById('micButton');
+                const pauseButton = document.getElementById('pauseButton');
+                const resetButton = document.getElementById('resetButton');
+                const hideToggle = document.getElementById('hideToggle');
+                const status = document.getElementById('status');
+                const controls = document.querySelector('.controls');
+                const githubLink = document.querySelector('.github-link');
+                const h1 = document.querySelector('h1');
+
+                audioInput.addEventListener('change', (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        this.playAudioFile(file);
+                        status.textContent = `Playing: ${file.name}`;
+                        pauseButton.disabled = false;
+                    }
+                });
+
+                micButton.addEventListener('click', () => {
+                    if (!this.source) {
+                        this.startMicrophone();
+                        status.textContent = 'Using microphone input';
+                        micButton.textContent = 'Stop Microphone';
+                        pauseButton.disabled = true;
+                    } else {
+                        this.stopAudio();
+                        status.textContent = 'Select an audio file or use microphone to begin';
+                        micButton.textContent = 'Use Microphone';
+                    }
+                });
+
+                pauseButton.addEventListener('click', () => {
+                    this.togglePauseResume();
+                    pauseButton.textContent = this.paused ? 'Resume' : 'Pause';
+                });
+
+                resetButton.addEventListener('click', () => {
+                    this.stopAudio();
+                    audioInput.value = null;
+                    status.textContent = 'Select an audio file or use microphone to begin';
+                    pauseButton.disabled = true;
+                });
+
+                hideToggle.addEventListener('click', () => {
+                    const hidden = controls.classList.toggle('hidden');
+                    githubLink.classList.toggle('hidden');
+                    status.classList.toggle('hidden');
+                    h1.classList.toggle('hidden');
+                    hideToggle.textContent = hidden ? '☰' : '✕';
+                });
+            }
+
+            async startMicrophone() {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    this.stopAudio();
+                    this.source = this.audioContext.createMediaStreamSource(stream);
+                    this.source.connect(this.analyzer);
+                } catch (err) {
+                    console.error('Error accessing microphone:', err);
+                }
+            }
+
+            playAudioFile(file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    this.audioContext.decodeAudioData(e.target.result, (buffer) => {
+                        this.stopAudio();
+                        const audioBufferSource = this.audioContext.createBufferSource();
+                        audioBufferSource.buffer = buffer;
+                        audioBufferSource.connect(this.analyzer);
+                        this.analyzer.connect(this.audioContext.destination);
+                        audioBufferSource.start(0);
+                        this.source = audioBufferSource;
+                    });
+                };
+                reader.readAsArrayBuffer(file);
+            }
+
+            togglePauseResume() {
+                if (this.audioContext.state === 'running') {
+                    this.audioContext.suspend();
+                    this.paused = true;
+                } else {
+                    this.audioContext.resume();
+                    this.paused = false;
+                }
+            }
+
+            stopAudio() {
+                if (this.source) {
+                    this.source.disconnect();
+                    if (this.source.stop) {
+                        this.source.stop();
+                    }
+                    this.source = null;
+                }
+            }
+
+            animate = () => {
+                requestAnimationFrame(this.animate);
+                this.analyzer.getByteFrequencyData(this.dataArray);
+
+                this.ctx.fillStyle = 'rgb(0, 8, 12)';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+                this.drawGrid();
+
+                const barWidth = 2;
+                const barSpacing = 1;
+                const barCount = Math.floor(this.canvas.width / (barWidth + barSpacing));
+                const centerX = this.canvas.width / 2;
+
+                for (let i = 0; i < barCount; i++) {
+                    const value = this.dataArray[i] || 0;
+                    const height = (value / 255) * this.canvas.height * 0.8;
+
+                    const alpha = 0.3 + (height / this.canvas.height) * 0.7;
+                    const color = `rgba(0, 255, 162, ${alpha})`;
+
+                    this.ctx.fillStyle = color;
+                    this.ctx.fillRect(
+                        centerX - (i + 1) * (barWidth + barSpacing),
+                        this.canvas.height - height,
+                        barWidth,
+                        height
+                    );
+                    this.ctx.fillRect(
+                        centerX + i * (barWidth + barSpacing),
+                        this.canvas.height - height,
+                        barWidth,
+                        height
+                    );
+                }
+            };
+
+            drawGrid() {
+                const step = 50;
+                this.ctx.strokeStyle = 'rgba(0, 255, 162, 0.1)';
+                this.ctx.lineWidth = 1;
+
+                for (let i = step; i < this.canvas.height; i += step) {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(0, i);
+                    this.ctx.lineTo(this.canvas.width, i);
+                    this.ctx.stroke();
+                }
+            }
+        }
+
+        window.addEventListener('load', () => new AudioVisualizer());
+    </script>
+</body>
+</html>
