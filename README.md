@@ -78,6 +78,7 @@ cd NeonPulse
 ## 🧑‍💻 Author
 
 **Jishanahmed AR Shaikh**
+
 💼 [LinkedIn](https://www.linkedin.com/in/jishanahmedshaikh)
 
 📩 shaikhjishan255@gmail.com
