@@ -1,5 +1,17 @@
 # 🎧 NeonPulse - A Web Based Audio Visualizer
 
+<div align="center">
+  <img src="favicon.png" alt="NeonPulse Logo" width="120" height="120">
+
+  **Transform your Music/Audio/Sounds into Aesthetic Pulses!**
+
+[![Built with HTML](https://img.shields.io/badge/HTML-FFA500?style=for-the-badge&logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
+[![Built with CSS](https://img.shields.io/badge/CSS-264DE4?style=for-the-badge&logo=css3&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/CSS)
+[![Built with JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+
+</div>
+
+
 **NeonPulse** is a futuristic, real-time audio visualizer built using **HTML5  CSS & JAVASCRIPT (Vanilla)** and Whether you upload your favorite track or use your microphone, EchoPulse transforms sound into stunning neon visual pulses.
 
 ---
