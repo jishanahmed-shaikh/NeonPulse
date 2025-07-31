@@ -90,9 +90,13 @@ cd NeonPulse
 ## 🧑‍💻 Author
 
 **Jishanahmed AR Shaikh**
+
 💼 [LinkedIn](https://www.linkedin.com/in/jishanahmedshaikh)
+
 📩 shaikhjishan255@gmail.com
+
 👻 Snapchat: `jishanahmed2209`
+
 ⭐ Instagram: [@jishanahmed_shaikh](https://instagram.com/jishanahmed_shaikh)
 
 ---
