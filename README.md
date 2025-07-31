@@ -36,12 +36,6 @@
 
 ---
 
-## 📸 Screenshots
-
-| File Mode                                                                                                  | Mic Mode                                                                                                 |
-| ---------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| ![File](https://raw.githubusercontent.com/jishanahmed-shaikh/audiovisualizer-web/main/screens/file-mode.gif) | ![Mic](https://raw.githubusercontent.com/jishanahmed-shaikh/audiovisualizer-web/main/screens/mic-mode.gif) |
-
 > Works best with tracks that have dynamic beats & bass.
 
 ---
@@ -108,4 +102,4 @@ Released under the MIT License. Feel free to use, share, and remix with credit.
 ---
 
 > 🎶 *"Turn sound into sight - Echo the Pulse Via NeonPulse."*
-> — Neon*Pulse Team*
+> — Jishanahmed *AR Shaikh*
