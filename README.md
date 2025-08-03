@@ -1,6 +1,4 @@
-<div align="center">
 # 🎧 NeonPulse - A Web Based Audio Visualizer
-</div>
 
 <div align="center">
   <img src="favicon.png" alt="NeonPulse Logo" width="120" height="120">
