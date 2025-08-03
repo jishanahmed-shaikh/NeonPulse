@@ -78,6 +78,7 @@ cd NeonPulse
 
 - 🌐 [Live Demo](https://jishanahmed-shaikh.github.io/NeonPulse/)
 - 🧠 [GitHub Repository](https://github.com/jishanahmed-shaikh/NeonPulse)
+- 📺 [YouTube Presentation](https://youtu.be/wlosH8iqsS8)
 
 ---
 
